@@ -1,0 +1,33 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+
+spring:
+  application:
+    name: APIGATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: product-service
+          uri: lb://PRODUCTSERVICE
+          predicates:
+            - Path=/products/**
+        - id: order-service
+          uri: lb://ORDERSERVICE
+          predicates:
+            - Path=/orders/**
+        - id: customer-service
+          uri: lb://CUSTOMERSERVICE
+          predicates:
+            - Path=/customers/**
+      discovery:
+        locator:
+          enabled: true
