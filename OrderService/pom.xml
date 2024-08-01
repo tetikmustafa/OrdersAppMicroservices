@@ -81,7 +81,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>OrdersApp</finalName>
+        <finalName>OrderService</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

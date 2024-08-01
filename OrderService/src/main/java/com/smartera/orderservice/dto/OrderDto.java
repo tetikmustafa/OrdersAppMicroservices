@@ -1,4 +1,4 @@
-package com.smartera.orderservice.dto.order;
+package com.smartera.orderservice.dto;
 
 import lombok.Getter;
 import lombok.Setter;

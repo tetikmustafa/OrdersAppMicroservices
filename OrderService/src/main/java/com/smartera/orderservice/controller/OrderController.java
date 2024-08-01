@@ -1,7 +1,7 @@
 package com.smartera.orderservice.controller;
 
-import com.smartera.orderservice.dto.order.OrderDto;
-import com.smartera.orderservice.dto.order.OrderIdDto;
+import com.smartera.orderservice.dto.OrderDto;
+import com.smartera.orderservice.dto.OrderIdDto;
 import com.smartera.orderservice.entity.Order;
 import com.smartera.orderservice.mapper.OrderMapper;
 import com.smartera.orderservice.service.OrderService;

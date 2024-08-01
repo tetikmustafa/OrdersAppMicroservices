@@ -13,9 +13,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Order {
-    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID orderId;
     private UUID orderCustomerId;
