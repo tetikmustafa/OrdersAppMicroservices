@@ -18,9 +18,10 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin()
 @RequestMapping("customers")
-public class CustomerController{
+public class
+CustomerController{
 
     @Autowired
     CustomerService customerService;
