@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   serviceregistry:
-    image: tet1k/ordersapp_serviceregistry:v2
+    image: tet1k/ordersapp_serviceregistry:v3
     ports:
       - 8761:8761
     healthcheck:
@@ -12,14 +12,12 @@ services:
     networks:
       - springboot-mysql-network
   apigateway:
-    image: tet1k/ordersapp_apigateway:v3
+    image: tet1k/ordersapp_apigateway:v4
     ports:
       - 8080:8080
     depends_on:
       serviceregistry:
         condition: service_healthy
-      productservice:
-        condition: service_started
       customerservice:
           condition: service_started
       orderservice:
@@ -29,24 +27,8 @@ services:
       - SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS-CONFIGURATIONS_0_ALLOWEDORIGINS=*
     networks:
       - springboot-mysql-network
-  productservice:
-    image: tet1k/ordersapp_productservice:v2
-    ports:
-      - 8081:8081
-    depends_on:
-        mysqldb:
-            condition: service_healthy
-        serviceregistry:
-          condition: service_healthy
-    environment:
-        - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/productsdb
-        - SPRING_DATASOURCE_USERNAME=root
-        - SPRING_DATASOURCE_PASSWORD=12345
-        - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://serviceregistry:8761/eureka
-    networks:
-        - springboot-mysql-network
   customerservice:
-    image: tet1k/ordersapp_customerservice:v2
+    image: tet1k/ordersapp_customerservice:v3
     ports:
       - 8082:8082
     depends_on:
@@ -64,7 +46,7 @@ services:
     networks:
       - springboot-mysql-network
   orderservice:
-    image: tet1k/ordersapp_orderservice:v2
+    image: tet1k/ordersapp_orderservice:v3
     ports:
       - 8083:8083
     depends_on:
@@ -80,7 +62,7 @@ services:
     networks:
       - springboot-mysql-network
   mysqldb:
-    image: tet1k/ordersapp_mysqldb:v1
+    image: tet1k/ordersapp_mysqldb:v2
     ports:
       - 3307:3306
     environment:

@@ -11,9 +11,11 @@
         <module name="ServiceRegistry" />
         <module name="OrderService" />
         <module name="ApiGateway" />
-        <module name="ProductService" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ProductService" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
