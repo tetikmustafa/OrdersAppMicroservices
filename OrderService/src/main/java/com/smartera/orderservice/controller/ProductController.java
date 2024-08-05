@@ -1,23 +1,22 @@
-package com.smartera.productservice.controller;
+package com.smartera.orderservice.controller;
 
 
-import com.smartera.productservice.dto.ProductCreateDto;
-import com.smartera.productservice.dto.ProductDto;
-import com.smartera.productservice.dto.ProductIdDto;
-import com.smartera.productservice.entity.Product;
-import com.smartera.productservice.mapper.ProductMapper;
-import com.smartera.productservice.service.ProductService;
+import com.smartera.orderservice.dto.ProductCreateDto;
+import com.smartera.orderservice.dto.ProductDto;
+import com.smartera.orderservice.dto.ProductIdDto;
+import com.smartera.orderservice.entity.Product;
+import com.smartera.orderservice.mapper.ProductMapper;
+import com.smartera.orderservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
-
 @RestController
 @CrossOrigin()
 @RequestMapping("products")
-public class ProductController{
+public class ProductController {
 
     @Autowired
     ProductService productService;

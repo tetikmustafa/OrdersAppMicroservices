@@ -1,15 +1,14 @@
-package com.smartera.customerservice.dto.order;
+package com.smartera.orderservice.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
-public class OrderCreateDto {
+public class OrderWriteDto {
     private String orderName;
     private String orderDescription;
-    private List<UUID> orderProductsIds;
+    private List<String> orderProductsIds;
 }

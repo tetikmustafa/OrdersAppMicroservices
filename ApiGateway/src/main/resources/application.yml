@@ -31,12 +31,6 @@ spring:
         connect-timeout: 20000
         response-timeout: 7s
       routes:
-        - id: productservice
-          uri: lb://PRODUCTSERVICE
-          predicates:
-            - Path=/products/**
-          filters:
-            - StripPrefix=1
         - id: orderservice
           uri: lb://ORDERSERVICE
           predicates:
@@ -68,9 +62,6 @@ springdoc:
       - url: /CUSTOMERSERVICE/v3/api-docs
         name: Customer Service
         display-name: Customer Service
-      - url: /PRODUCTSERVICE/v3/api-docs
-        name: Product Service
-        display-name: Product Service
       - url: /ORDERSERVICE/v3/api-docs
         name: Order Service
         display-name: Order Service

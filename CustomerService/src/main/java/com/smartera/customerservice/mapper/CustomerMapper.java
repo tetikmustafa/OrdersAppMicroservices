@@ -1,8 +1,9 @@
 package com.smartera.customerservice.mapper;
 
-import com.smartera.customerservice.dto.customer.CustomerCreateDto;
-import com.smartera.customerservice.dto.customer.CustomerDto;
-import com.smartera.customerservice.dto.customer.CustomerIdDto;
+import com.smartera.customerservice.dto.CustomerCreateDto;
+import com.smartera.customerservice.dto.CustomerDto;
+import com.smartera.customerservice.dto.CustomerIdDto;
+import com.smartera.customerservice.dto.CustomerUpdateDto;
 import com.smartera.customerservice.entity.Customer;
 
 public class CustomerMapper {
@@ -21,6 +22,15 @@ public class CustomerMapper {
         customer.setCustomerName(customerCreateDto.getCustomerName());
         customer.setCustomerDescription(customerCreateDto.getCustomerDescription());
         customer.setCustomerAuthorization(false);
+        return customer;
+    }
+
+    public static Customer toCustomer(CustomerUpdateDto customerUpdateDto) {
+        Customer customer = new Customer();
+        customer.setCustomerName(customerUpdateDto.getCustomerName());
+        customer.setCustomerDescription(customerUpdateDto.getCustomerDescription());
+        customer.setCustomerOrdersIds(customerUpdateDto.getCustomerOrdersIds());
+        customer.setCustomerAuthorization(customerUpdateDto.isCustomerAuthorization());
         return customer;
     }
 

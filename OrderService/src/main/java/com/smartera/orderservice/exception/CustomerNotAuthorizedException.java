@@ -1,9 +1,9 @@
-package com.smartera.customerservice.exception;
+package com.smartera.orderservice.exception;
 
-import java.util.UUID;
+
 
 public class CustomerNotAuthorizedException extends RuntimeException{
-    public CustomerNotAuthorizedException(UUID customerId) {
+    public CustomerNotAuthorizedException(String customerId) {
         super("Customer not authorized : "+customerId);
     }
 }

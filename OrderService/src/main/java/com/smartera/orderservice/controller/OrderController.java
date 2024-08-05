@@ -2,6 +2,7 @@ package com.smartera.orderservice.controller;
 
 import com.smartera.orderservice.dto.OrderDto;
 import com.smartera.orderservice.dto.OrderIdDto;
+import com.smartera.orderservice.dto.OrderWriteDto;
 import com.smartera.orderservice.entity.Order;
 import com.smartera.orderservice.mapper.OrderMapper;
 import com.smartera.orderservice.service.OrderService;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
+
 
 @RestController
 @CrossOrigin()
@@ -19,15 +20,15 @@ public class OrderController{
     @Autowired
     OrderService orderService;
 
-    @PostMapping()
-    public OrderIdDto save(@RequestBody OrderDto orderDto) {
+    @PostMapping("/{customerId}")
+            public OrderIdDto save(@RequestBody OrderWriteDto orderDto, @PathVariable String customerId) {
         Order order = OrderMapper.toOrder(orderDto);
-        orderService.save(order);
+        orderService.save(order,customerId);
         return OrderMapper.toOrderIdDto(orderService.findById(order.getOrderId()));
     }
 
     @GetMapping("/{orderId}")
-    public OrderDto findById(@PathVariable UUID orderId) {
+    public OrderDto findById(@PathVariable String orderId) {
         return OrderMapper.toOrderDto(orderService.findById(orderId));
     }
 
@@ -44,35 +45,34 @@ public class OrderController{
     }
 
     @GetMapping("/byCustomerId/{customerId}")
-    public List<OrderDto> findByCustomerId(@PathVariable UUID customerId) {
+    public List<OrderDto> findByCustomerId(@PathVariable String customerId) {
         return orderService.findByCustomerId(customerId)
                 .stream().map(OrderMapper::toOrderDto).toList();
     }
 
     @GetMapping("/byCustomerId/{customerId}/{keyword}")
-    public List<OrderDto> findByKeyword(@PathVariable UUID customerId, @PathVariable String keyword) {
+    public List<OrderDto> findByKeyword(@PathVariable String customerId, @PathVariable String keyword) {
         return orderService.findByCustomerIdKeyword(customerId, keyword)
                 .stream().map(OrderMapper::toOrderDto).toList();
     }
 
-//    deişik
-    @PutMapping()
-    public OrderIdDto update(@RequestBody OrderDto orderDto) {
+    @PutMapping("/{orderId}")
+    public OrderIdDto update(@RequestBody OrderWriteDto orderDto, @PathVariable String orderId) {
         Order order = OrderMapper.toOrder(orderDto);
-        orderService.update(order);
+        orderService.update(order,orderId);
         return OrderMapper.toOrderIdDto(orderService.findById(order.getOrderId()));
     }
 
 
     @DeleteMapping("/{orderId}")
-    public String deleteById(@PathVariable UUID orderId) {
+    public String deleteById(@PathVariable String orderId) {
         orderService.deleteById(orderId);
         return "Order with id " + orderId + " has been deleted";
     }
 
 
     @DeleteMapping("/byCustomerId/{customerId}")
-    public String deleteByCustomerId(@PathVariable UUID customerId) {
+    public String deleteByCustomerId(@PathVariable String customerId) {
         orderService.deleteByCustomerId(customerId);
         return "Orders of customer with id " + customerId + " have been deleted";
     }

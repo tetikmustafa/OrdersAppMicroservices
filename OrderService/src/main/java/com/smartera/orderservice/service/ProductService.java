@@ -1,8 +1,8 @@
-package com.smartera.productservice.service;
+package com.smartera.orderservice.service;
 
 
 
-import com.smartera.productservice.entity.Product;
+import com.smartera.orderservice.entity.Product;
 
 import java.util.List;
 

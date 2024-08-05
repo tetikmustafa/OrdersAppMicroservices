@@ -3,17 +3,17 @@ package com.smartera.orderservice.service;
 import com.smartera.orderservice.entity.Order;
 
 import java.util.List;
-import java.util.UUID;
+
 
 public interface OrderService {
-    void save(Order order);
-    Order findById(UUID orderId);
+    void save(Order order,String customerId);
+    Order findById(String orderId);
     List<Order> findAll();
     List<Order> findByKeyword(String keyword);
-    void update(Order order);
-    void deleteById(UUID orderId);
+    void update(Order order, String orderId);
+    void deleteById(String orderId);
     void deleteAll();
-    List<Order> findByCustomerId(UUID customerId);
-    List<Order> findByCustomerIdKeyword(UUID customerId, String keyword);
-    void deleteByCustomerId(UUID customerId);
+    List<Order> findByCustomerId(String customerId);
+    List<Order> findByCustomerIdKeyword(String customerId, String keyword);
+    void deleteByCustomerId(String customerId);
 }

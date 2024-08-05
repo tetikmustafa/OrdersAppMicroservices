@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
+
 
 @Component
 @Data
@@ -17,10 +17,10 @@ import java.util.UUID;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID customerId;
+    private String customerId;
     private String customerName;
     private String customerDescription;
     private boolean customerAuthorization;
     @ElementCollection
-    private List<UUID> customerOrdersIds;
+    private List<String> customerOrdersIds;
 }

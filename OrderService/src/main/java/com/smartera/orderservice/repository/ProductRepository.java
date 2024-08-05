@@ -1,7 +1,7 @@
-package com.smartera.productservice.repository;
+package com.smartera.orderservice.repository;
 
 
-import com.smartera.productservice.entity.Product;
+import com.smartera.orderservice.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

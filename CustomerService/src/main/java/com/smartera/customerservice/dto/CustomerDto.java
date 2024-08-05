@@ -1,17 +1,17 @@
-package com.smartera.customerservice.dto.customer;
+package com.smartera.customerservice.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
+
 
 @Getter
 @Setter
 public class CustomerDto {
-    private UUID customerId;
+    private String customerId;
     private String customerName;
     private String customerDescription;
     private boolean customerAuthorization;
-    private List<UUID> customerOrdersIds;
+    private List<String> customerOrdersIds;
 }

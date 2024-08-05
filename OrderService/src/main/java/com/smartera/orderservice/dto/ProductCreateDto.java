@@ -1,14 +1,11 @@
-package com.smartera.productservice.dto;
+package com.smartera.orderservice.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
-
-
 @Getter
 @Setter
-public class ProductDto {
-    private String productId;
+public class ProductCreateDto {
     private String productName;
     private String productDescription;
     private double productPrice;

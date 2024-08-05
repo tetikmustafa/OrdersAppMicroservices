@@ -21,15 +21,4 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-
-    @ExceptionHandler(CustomerNotAuthorizedException.class)
-    public ProblemDetail customerNotAuthorizedException(CustomerNotAuthorizedException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.getMessage());
-        problemDetail.setTitle("Customer not authorized!");
-        problemDetail.setType(URI.create("https://http.cat/status/403"));
-        problemDetail.setProperty("errorCategory", "Generic");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return problemDetail;
-    }
-
 }

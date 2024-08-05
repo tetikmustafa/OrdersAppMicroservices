@@ -1,10 +1,10 @@
-package com.smartera.productservice.service.impl;
+package com.smartera.orderservice.service.impl;
 
 
-import com.smartera.productservice.entity.Product;
-import com.smartera.productservice.exception.ProductNotFoundException;
-import com.smartera.productservice.repository.ProductRepository;
-import com.smartera.productservice.service.ProductService;
+import com.smartera.orderservice.entity.Product;
+import com.smartera.orderservice.exception.ProductNotFoundException;
+import com.smartera.orderservice.repository.ProductRepository;
+import com.smartera.orderservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

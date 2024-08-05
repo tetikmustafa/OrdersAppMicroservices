@@ -2,6 +2,7 @@ package com.smartera.orderservice.mapper;
 
 import com.smartera.orderservice.dto.OrderDto;
 import com.smartera.orderservice.dto.OrderIdDto;
+import com.smartera.orderservice.dto.OrderWriteDto;
 import com.smartera.orderservice.entity.Order;
 
 public class OrderMapper {
@@ -15,13 +16,11 @@ public class OrderMapper {
         return orderDto;
     }
 
-    public static Order toOrder(OrderDto orderDto) {
+    public static Order toOrder(OrderWriteDto orderWriteDto) {
         Order order = new Order();
-        order.setOrderId(orderDto.getOrderId());
-        order.setOrderCustomerId(orderDto.getOrderCustomerId());
-        order.setOrderName(orderDto.getOrderName());
-        order.setOrderDescription(orderDto.getOrderDescription());
-        order.setOrderProductsIds(orderDto.getOrderProductsIds());
+        order.setOrderName(orderWriteDto.getOrderName());
+        order.setOrderDescription(orderWriteDto.getOrderDescription());
+        order.setOrderProductsIds(orderWriteDto.getOrderProductsIds());
         return order;
     }
 

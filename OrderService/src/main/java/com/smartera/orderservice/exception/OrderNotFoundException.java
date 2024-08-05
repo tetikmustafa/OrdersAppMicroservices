@@ -1,9 +1,9 @@
 package com.smartera.orderservice.exception;
 
-import java.util.UUID;
+
 
 public class OrderNotFoundException extends RuntimeException{
-    public OrderNotFoundException(UUID orderId) {
+    public OrderNotFoundException(String orderId) {
         super("Order not found : "+orderId);
     }
 }

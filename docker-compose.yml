@@ -26,6 +26,7 @@ services:
         condition: service_started
     environment:
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://serviceregistry:8761/eureka
+      - SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS-CONFIGURATIONS_0_ALLOWEDORIGINS=*
     networks:
       - springboot-mysql-network
   productservice:

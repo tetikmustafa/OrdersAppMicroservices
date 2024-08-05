@@ -25,8 +25,6 @@ public class ApiGatewayApplication {
         return builder.routes()
                 .route("orderservice", r -> r.path("/orders/**")
                         .and().method(HttpMethod.GET).uri("lb://ORDERSERVICE"))
-                .route("productservice", r -> r.path("/products/**")
-                        .and().method(HttpMethod.GET).uri("lb://PRODUCTSERVICE"))
                 .route("customerservice", r -> r.path("/customers/**")
                         .and().method(HttpMethod.GET).uri("lb://CUSTOMERSERVICE"))
                 .build();
