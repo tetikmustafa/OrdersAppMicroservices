@@ -4,7 +4,6 @@ import com.smartera.customerservice.entity.Customer;
 
 import java.util.List;
 
-
 public interface CustomerService {
     void save(Customer customer);
     Customer findById(String customerId);
