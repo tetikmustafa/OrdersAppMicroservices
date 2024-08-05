@@ -1,34 +1,27 @@
 package com.smartera.orderservice.mapper;
 
 
-import com.smartera.orderservice.dto.ProductCreateDto;
-import com.smartera.orderservice.dto.ProductDto;
-import com.smartera.orderservice.dto.ProductIdDto;
+import com.smartera.orderservice.dto.ProductWriteDto;
+import com.smartera.orderservice.dto.ProductReadDto;
 import com.smartera.orderservice.entity.Product;
 
 public class ProductMapper {
-    public static ProductDto toProductDto(Product product) {
-        ProductDto productDto = new ProductDto();
-        productDto.setProductId(product.getProductId());
-        productDto.setProductName(product.getProductName());
-        productDto.setProductDescription(product.getProductDescription());
-        productDto.setProductPrice(product.getProductPrice());
-        productDto.setProductStock(product.getProductStock());
-        return productDto;
+    public static ProductReadDto toProductReadDto(Product product) {
+        ProductReadDto productReadDto = new ProductReadDto();
+        productReadDto.setProductId(product.getProductId());
+        productReadDto.setProductName(product.getProductName());
+        productReadDto.setProductDescription(product.getProductDescription());
+        productReadDto.setProductPrice(product.getProductPrice());
+        productReadDto.setProductStock(product.getProductStock());
+        return productReadDto;
     }
 
-    public static Product toProduct(ProductCreateDto productCreateDto) {
+    public static Product toProduct(ProductWriteDto productWriteDto) {
         Product product = new Product();
-        product.setProductName(productCreateDto.getProductName());
-        product.setProductDescription(productCreateDto.getProductDescription());
-        product.setProductPrice(productCreateDto.getProductPrice());
-        product.setProductStock(productCreateDto.getProductStock());
+        product.setProductName(productWriteDto.getProductName());
+        product.setProductDescription(productWriteDto.getProductDescription());
+        product.setProductPrice(productWriteDto.getProductPrice());
+        product.setProductStock(productWriteDto.getProductStock());
         return product;
-    }
-
-    public static ProductIdDto toProductIdDto(Product product) {
-        ProductIdDto productIdDto = new ProductIdDto();
-        productIdDto.setProductId(product.getProductId());
-        return productIdDto;
     }
 }

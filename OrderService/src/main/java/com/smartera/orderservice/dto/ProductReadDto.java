@@ -7,6 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProductIdDto {
+public class ProductReadDto extends ProductWriteDto{
     private String productId;
 }

@@ -1,9 +1,8 @@
 package com.smartera.orderservice.controller;
 
 
-import com.smartera.orderservice.dto.ProductCreateDto;
-import com.smartera.orderservice.dto.ProductDto;
-import com.smartera.orderservice.dto.ProductIdDto;
+import com.smartera.orderservice.dto.ProductWriteDto;
+import com.smartera.orderservice.dto.ProductReadDto;
 import com.smartera.orderservice.entity.Product;
 import com.smartera.orderservice.mapper.ProductMapper;
 import com.smartera.orderservice.service.ProductService;
@@ -22,36 +21,36 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping()
-    public ProductIdDto save(@RequestBody ProductCreateDto productDto){
+    public ProductReadDto save(@RequestBody ProductWriteDto productDto){
         Product product = ProductMapper.toProduct(productDto);
         productService.save(product);
-        return ProductMapper.toProductIdDto(product);
+        return ProductMapper.toProductReadDto(product);
     }
 
     @GetMapping("/{productId}")
-    public ProductDto findById(@PathVariable String productId){
+    public ProductReadDto findById(@PathVariable String productId){
         Product product = productService.findById(productId);
-        return ProductMapper.toProductDto(product);
+        return ProductMapper.toProductReadDto(product);
     }
 
     @GetMapping()
-    public List<ProductDto> findAll(){
+    public List<ProductReadDto> findAll(){
         return productService.findAll()
-                .stream().map(ProductMapper::toProductDto).toList();
+                .stream().map(ProductMapper::toProductReadDto).toList();
     }
 
     @GetMapping("/keyword/{keyword}")
-    public List<ProductDto> findByKeyword(@PathVariable String keyword){
+    public List<ProductReadDto> findByKeyword(@PathVariable String keyword){
         return productService.findByKeyword(keyword)
-                .stream().map(ProductMapper::toProductDto).toList();
+                .stream().map(ProductMapper::toProductReadDto).toList();
     }
 
     @PutMapping("/{productId}")
-    public ProductIdDto update(@RequestBody ProductCreateDto productDto,@PathVariable String productId){
+    public ProductReadDto update(@RequestBody ProductWriteDto productDto, @PathVariable String productId){
         Product product = ProductMapper.toProduct(productDto);
         product.setProductId(productId);
         productService.update(product);
-        return ProductMapper.toProductIdDto(product);
+        return ProductMapper.toProductReadDto(product);
     }
 
     @DeleteMapping("/{productId}")

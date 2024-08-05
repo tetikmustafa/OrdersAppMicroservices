@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CustomerCreateDto {
-    private String customerName;
-    private String customerDescription;
+public class CustomerReadDto extends CustomerUpdateDto{
+    private String customerId;
 }

@@ -1,7 +1,6 @@
 package com.smartera.orderservice.controller;
 
-import com.smartera.orderservice.dto.OrderDto;
-import com.smartera.orderservice.dto.OrderIdDto;
+import com.smartera.orderservice.dto.OrderReadDto;
 import com.smartera.orderservice.dto.OrderWriteDto;
 import com.smartera.orderservice.entity.Order;
 import com.smartera.orderservice.mapper.OrderMapper;
@@ -21,46 +20,46 @@ public class OrderController{
     OrderService orderService;
 
     @PostMapping("/{customerId}")
-            public OrderIdDto save(@RequestBody OrderWriteDto orderDto, @PathVariable String customerId) {
+    public OrderReadDto save(@RequestBody OrderWriteDto orderDto, @PathVariable String customerId) {
         Order order = OrderMapper.toOrder(orderDto);
         orderService.save(order,customerId);
-        return OrderMapper.toOrderIdDto(orderService.findById(order.getOrderId()));
+        return OrderMapper.toOrderReadDto(orderService.findById(order.getOrderId()));
     }
 
     @GetMapping("/{orderId}")
-    public OrderDto findById(@PathVariable String orderId) {
-        return OrderMapper.toOrderDto(orderService.findById(orderId));
+    public OrderReadDto findById(@PathVariable String orderId) {
+        return OrderMapper.toOrderReadDto(orderService.findById(orderId));
     }
 
     @GetMapping()
-    public List<OrderDto> findAll() {
+    public List<OrderReadDto> findAll() {
         return orderService.findAll()
-                .stream().map(OrderMapper::toOrderDto).toList();
+                .stream().map(OrderMapper::toOrderReadDto).toList();
     }
 
     @GetMapping("/keyword/{keyword}")
-    public List<OrderDto> findByKeyword(@PathVariable String keyword) {
+    public List<OrderReadDto> findByKeyword(@PathVariable String keyword) {
         return orderService.findByKeyword(keyword)
-                .stream().map(OrderMapper::toOrderDto).toList();
+                .stream().map(OrderMapper::toOrderReadDto).toList();
     }
 
     @GetMapping("/byCustomerId/{customerId}")
-    public List<OrderDto> findByCustomerId(@PathVariable String customerId) {
+    public List<OrderReadDto> findByCustomerId(@PathVariable String customerId) {
         return orderService.findByCustomerId(customerId)
-                .stream().map(OrderMapper::toOrderDto).toList();
+                .stream().map(OrderMapper::toOrderReadDto).toList();
     }
 
     @GetMapping("/byCustomerId/{customerId}/{keyword}")
-    public List<OrderDto> findByKeyword(@PathVariable String customerId, @PathVariable String keyword) {
+    public List<OrderReadDto> findByKeyword(@PathVariable String customerId, @PathVariable String keyword) {
         return orderService.findByCustomerIdKeyword(customerId, keyword)
-                .stream().map(OrderMapper::toOrderDto).toList();
+                .stream().map(OrderMapper::toOrderReadDto).toList();
     }
 
     @PutMapping("/{orderId}")
-    public OrderIdDto update(@RequestBody OrderWriteDto orderDto, @PathVariable String orderId) {
+    public OrderReadDto update(@RequestBody OrderWriteDto orderDto, @PathVariable String orderId) {
         Order order = OrderMapper.toOrder(orderDto);
         orderService.update(order,orderId);
-        return OrderMapper.toOrderIdDto(orderService.findById(order.getOrderId()));
+        return OrderMapper.toOrderReadDto(orderService.findById(order.getOrderId()));
     }
 
 

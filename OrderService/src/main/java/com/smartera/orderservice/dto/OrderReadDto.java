@@ -4,10 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-
 @Getter
 @Setter
-public class OrderIdDto {
+public class OrderReadDto extends OrderWriteDto {
     private String orderId;
     private String orderCustomerId;
 }
