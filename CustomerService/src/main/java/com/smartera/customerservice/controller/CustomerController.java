@@ -5,6 +5,8 @@ import com.smartera.customerservice.dto.CustomerReadDto;
 import com.smartera.customerservice.dto.CustomerUpdateDto;
 import com.smartera.customerservice.serviceview.CustomerServiceView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,48 +20,48 @@ public class CustomerController{
     CustomerServiceView customerServiceView;
 
     @PostMapping()
-    public CustomerReadDto save(@RequestBody CustomerWriteDto customerWriteDto) {
+    public ResponseEntity<CustomerReadDto> save(@RequestBody CustomerWriteDto customerWriteDto) {
         String customerId = customerServiceView.save(customerWriteDto);
-        return customerServiceView.findById(customerId);
+        return new ResponseEntity<>(customerServiceView.findById(customerId), HttpStatus.CREATED);
     }
 
     @GetMapping("/{customerId}")
-    public CustomerReadDto findById(@PathVariable String customerId) {
-        return customerServiceView.findById(customerId);
+    public ResponseEntity<CustomerReadDto> findById(@PathVariable String customerId) {
+        return new ResponseEntity<>(customerServiceView.findById(customerId), HttpStatus.OK);
     }
 
     @GetMapping()
-    public List<CustomerReadDto> findAll() {
-        return customerServiceView.findAll();
+    public ResponseEntity<List<CustomerReadDto>> findAll() {
+        return new ResponseEntity<>(customerServiceView.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/keyword/{keyword}")
-    public List<CustomerReadDto> findByKeyword(@PathVariable String keyword) {
-        return customerServiceView.findByKeyword(keyword);
+    public ResponseEntity<List<CustomerReadDto>> findByKeyword(@PathVariable String keyword) {
+        return new ResponseEntity<>(customerServiceView.findByKeyword(keyword), HttpStatus.OK);
     }
 
     @PutMapping("/{customerId}")
-    public CustomerReadDto update(@RequestBody CustomerUpdateDto customerUpdateDto, @PathVariable String customerId) {
+    public ResponseEntity<CustomerReadDto> update(@RequestBody CustomerUpdateDto customerUpdateDto, @PathVariable String customerId) {
         customerServiceView.update(customerUpdateDto, customerId);
-        return customerServiceView.findById(customerId);
+        return new ResponseEntity<>(customerServiceView.findById(customerId), HttpStatus.OK);
     }
 
 
     @PutMapping("/{customerId}/authorize")
-    public String authorize(@PathVariable String customerId) {
+    public ResponseEntity<String> authorize(@PathVariable String customerId) {
         customerServiceView.authorize(customerId);
-        return "Customer "+customerId+" has been authorized.";
+        return new ResponseEntity<>("Customer with id " + customerId + " has been authorized", HttpStatus.OK);
     }
 
     @DeleteMapping("/{customerId}")
-    public String deleteById(@PathVariable String customerId) {
+    public ResponseEntity<String> deleteById(@PathVariable String customerId) {
         customerServiceView.deleteById(customerId);
-        return "Customer with id " + customerId + " has been deleted";
+        return new ResponseEntity<>("Customer with id " + customerId + " has been deleted", HttpStatus.OK);
     }
 
     @DeleteMapping()
-    public String deleteAll() {
+    public ResponseEntity<String> deleteAll() {
         customerServiceView.deleteAll();
-        return "All customers have been deleted";
+        return new ResponseEntity<>("All customers have been deleted", HttpStatus.OK);
     }
 }

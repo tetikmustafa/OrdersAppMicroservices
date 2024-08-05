@@ -4,6 +4,8 @@ import com.smartera.orderservice.dto.OrderReadDto;
 import com.smartera.orderservice.dto.OrderWriteDto;
 import com.smartera.orderservice.serviceview.OrderServiceView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,59 +20,59 @@ public class OrderController{
     OrderServiceView orderServiceView;
 
     @PostMapping("/{customerId}")
-    public OrderReadDto save(@RequestBody OrderWriteDto orderWriteDto, @PathVariable String customerId) {
+    public ResponseEntity<OrderReadDto> save(@RequestBody OrderWriteDto orderWriteDto, @PathVariable String customerId) {
         String orderId = orderServiceView.save(orderWriteDto, customerId);
-        return orderServiceView.findById(orderId);
+        return new ResponseEntity<>(orderServiceView.findById(orderId), HttpStatus.CREATED) ;
     }
 
     @GetMapping("/{orderId}")
-    public OrderReadDto findById(@PathVariable String orderId) {
-        return orderServiceView.findById(orderId);
+    public ResponseEntity<OrderReadDto> findById(@PathVariable String orderId) {
+        return new ResponseEntity<>(orderServiceView.findById(orderId), HttpStatus.OK);
     }
 
     @GetMapping()
-    public List<OrderReadDto> findAll() {
-        return orderServiceView.findAll();
+    public ResponseEntity<List<OrderReadDto>> findAll() {
+        return new ResponseEntity<>(orderServiceView.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/keyword/{keyword}")
-    public List<OrderReadDto> findByKeyword(@PathVariable String keyword) {
-        return orderServiceView.findByKeyword(keyword);
+    public ResponseEntity<List<OrderReadDto>> findByKeyword(@PathVariable String keyword) {
+        return new ResponseEntity<>(orderServiceView.findByKeyword(keyword), HttpStatus.OK);
     }
 
     @GetMapping("/byCustomerId/{customerId}")
-    public List<OrderReadDto> findByCustomerId(@PathVariable String customerId) {
-        return orderServiceView.findByCustomerId(customerId);
+    public ResponseEntity<List<OrderReadDto>> findByCustomerId(@PathVariable String customerId) {
+        return new ResponseEntity<>(orderServiceView.findByCustomerId(customerId), HttpStatus.OK);
     }
 
     @GetMapping("/byCustomerId/{customerId}/{keyword}")
-    public List<OrderReadDto> findByKeyword(@PathVariable String customerId, @PathVariable String keyword) {
-        return orderServiceView.findByCustomerIdKeyword(customerId, keyword);
+    public ResponseEntity<List<OrderReadDto>> findByKeyword(@PathVariable String customerId, @PathVariable String keyword) {
+        return new ResponseEntity<>(orderServiceView.findByCustomerIdKeyword(customerId, keyword), HttpStatus.OK);
     }
 
     @PutMapping("/{orderId}")
-    public OrderReadDto update(@RequestBody OrderWriteDto orderWriteDto, @PathVariable String orderId) {
+    public ResponseEntity<OrderReadDto> update(@RequestBody OrderWriteDto orderWriteDto, @PathVariable String orderId) {
         orderServiceView.update(orderWriteDto, orderId);
-        return orderServiceView.findById(orderId);
+        return new ResponseEntity<>(orderServiceView.findById(orderId), HttpStatus.OK);
     }
 
 
     @DeleteMapping("/{orderId}")
-    public String deleteById(@PathVariable String orderId) {
+    public ResponseEntity<String> deleteById(@PathVariable String orderId) {
         orderServiceView.deleteById(orderId);
-        return "Order with id " + orderId + " has been deleted";
+        return new ResponseEntity<>("Order with id " + orderId + " has been deleted", HttpStatus.OK);
     }
 
 
     @DeleteMapping("/byCustomerId/{customerId}")
-    public String deleteByCustomerId(@PathVariable String customerId) {
+    public ResponseEntity<String> deleteByCustomerId(@PathVariable String customerId) {
         orderServiceView.deleteByCustomerId(customerId);
-        return "Orders of customer with id " + customerId + " have been deleted";
+        return new ResponseEntity<>("Orders of customer with id " + customerId + " have been deleted", HttpStatus.OK);
     }
 
     @DeleteMapping()
-    public String deleteAll() {
+    public ResponseEntity<String> deleteAll() {
         orderServiceView.deleteAll();
-        return "All orders have been deleted";
+        return new ResponseEntity<>("All orders have been deleted", HttpStatus.OK);
     }
 }
