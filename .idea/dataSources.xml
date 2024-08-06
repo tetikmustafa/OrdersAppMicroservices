@@ -13,7 +13,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="docker" uuid="52b390a4-2a9e-459d-bdef-e3801b65cfb5">
+    <data-source source="LOCAL" name="docker" uuid="bea826f0-d75f-4fab-8422-129c90190273">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

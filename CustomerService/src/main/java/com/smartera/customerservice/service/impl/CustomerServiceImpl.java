@@ -6,7 +6,6 @@ import com.smartera.customerservice.repository.CustomerRepository;
 import com.smartera.customerservice.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +21,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.save(customer);
     }
 
-    public Customer findById(@PathVariable String customerId) {
+    public Customer findById(String customerId) {
         return  customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException(customerId));
     }
 
@@ -39,10 +38,20 @@ public class CustomerServiceImpl implements CustomerService {
         if (o.isEmpty()) {
             throw new CustomerNotFoundException(customer.getCustomerId());
         }
+        if(customer.getCustomerName() == null || customer.getCustomerName().isEmpty()){
+            customer.setCustomerName(o.get().getCustomerName());
+        }
+        if(customer.getCustomerDescription() == null || customer.getCustomerDescription().isEmpty()){
+            customer.setCustomerDescription(o.get().getCustomerDescription());
+        }
+        customer.setCustomerAuthorization(o.get().isCustomerAuthorization());
+        if(customer.getCustomerOrdersIds() == null || customer.getCustomerOrdersIds().isEmpty()){
+            customer.setCustomerOrdersIds(o.get().getCustomerOrdersIds());
+        }
         customerRepository.save(customer);
     }
 
-    public void deleteById(@PathVariable String customerId) {
+    public void deleteById(String customerId) {
         Optional<Customer> o = customerRepository.findById(customerId);
         if (o.isEmpty()) {
             throw new CustomerNotFoundException(customerId);
@@ -58,7 +67,7 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isPresent()){
             Customer c = customer.get();
-            c.setCustomerAuthorization(true);
+            c.setCustomerAuthorization(!c.isCustomerAuthorization());
             customerRepository.save(c);
         }
         else{

@@ -29,7 +29,6 @@ public class CustomerMapper {
         customer.setCustomerName(customerUpdateDto.getCustomerName());
         customer.setCustomerDescription(customerUpdateDto.getCustomerDescription());
         customer.setCustomerOrdersIds(customerUpdateDto.getCustomerOrdersIds());
-        customer.setCustomerAuthorization(customerUpdateDto.isCustomerAuthorization());
         return customer;
     }
 }

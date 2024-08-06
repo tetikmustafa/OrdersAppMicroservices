@@ -50,7 +50,7 @@ public class CustomerController{
     @PutMapping("/{customerId}/authorize")
     public ResponseEntity<String> authorize(@PathVariable String customerId) {
         customerServiceView.authorize(customerId);
-        return new ResponseEntity<>("Customer with id " + customerId + " has been authorized", HttpStatus.OK);
+        return new ResponseEntity<>("Customer with id " + customerId + " authorization has been changed.", HttpStatus.OK);
     }
 
     @DeleteMapping("/{customerId}")

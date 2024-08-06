@@ -40,6 +40,18 @@ public class ProductServiceImpl implements ProductService {
         if (o.isEmpty()) {
             throw new ProductNotFoundException(product.getProductId());
         }
+        if (product.getProductName() == null || product.getProductName().isEmpty()) {
+            product.setProductName(o.get().getProductName());
+        }
+        if (product.getProductDescription() == null || product.getProductDescription().isEmpty()) {
+            product.setProductDescription(o.get().getProductDescription());
+        }
+        if (product.getProductPrice() == 0) {
+            product.setProductPrice(o.get().getProductPrice());
+        }
+        if (product.getProductStock() == 0) {
+            product.setProductStock(o.get().getProductStock());
+        }
         productRepository.save(product);
 
     }

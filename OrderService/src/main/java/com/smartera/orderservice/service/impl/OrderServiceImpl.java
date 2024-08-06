@@ -10,7 +10,6 @@ import com.smartera.orderservice.repository.OrderRepository;
 import com.smartera.orderservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
         customerControllerClient.update(CustomerMapper.toCustomerUpdateDto(customerDto),customerId);
     }
 
-    public Order findById(@PathVariable String orderId) {
+    public Order findById(String orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
@@ -64,10 +63,19 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setOrderId(orderId);
         order.setOrderCustomerId(o.get().getOrderCustomerId());
+        if(order.getOrderName() == null || order.getOrderName().isEmpty()){
+            order.setOrderName(o.get().getOrderName());
+        }
+        if(order.getOrderDescription() == null || order.getOrderDescription().isEmpty()){
+            order.setOrderDescription(o.get().getOrderDescription());
+        }
+        if(order.getOrderProductsIds() == null || order.getOrderProductsIds().isEmpty()){
+            order.setOrderProductsIds(o.get().getOrderProductsIds());
+        }
         orderRepository.save(order);
     }
 
-    public void deleteById(@PathVariable String orderId) {
+    public void deleteById(String orderId) {
         Optional<Order> o = orderRepository.findById(orderId);
         if (o.isEmpty()) {
             throw new OrderNotFoundException(orderId);
@@ -84,6 +92,7 @@ public class OrderServiceImpl implements OrderService {
         for (Order order : orders) {
             customerDto.getCustomerOrdersIds().remove(order.getOrderId());
             orderRepository.deleteById(order.getOrderId());
+            customerControllerClient.update(CustomerMapper.toCustomerUpdateDto(customerDto),customerId);
         }
     }
 
