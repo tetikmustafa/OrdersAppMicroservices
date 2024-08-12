@@ -69,9 +69,6 @@ public class OrderServiceImpl implements OrderService {
         if(order.getOrderDescription() == null || order.getOrderDescription().isEmpty()){
             order.setOrderDescription(o.get().getOrderDescription());
         }
-        if(order.getOrderProductsIds() == null || order.getOrderProductsIds().isEmpty()){
-            order.setOrderProductsIds(o.get().getOrderProductsIds());
-        }
         orderRepository.save(order);
     }
 

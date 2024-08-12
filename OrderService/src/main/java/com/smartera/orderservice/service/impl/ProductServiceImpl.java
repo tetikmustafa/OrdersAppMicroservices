@@ -4,6 +4,7 @@ package com.smartera.orderservice.service.impl;
 import com.smartera.orderservice.entity.Product;
 import com.smartera.orderservice.exception.ProductNotFoundException;
 import com.smartera.orderservice.repository.ProductRepository;
+import com.smartera.orderservice.service.OrderService;
 import com.smartera.orderservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    OrderService orderService;
 
     public void save(Product product) {
         productRepository.save(product);
@@ -61,10 +65,18 @@ public class ProductServiceImpl implements ProductService {
         if (o.isEmpty()) {
             throw new ProductNotFoundException(productId);
         }
+        orderService.findAll().forEach(order -> {
+            order.getOrderProductsIds().removeIf(p -> p.equals(productId));
+            orderService.update(order,order.getOrderId());
+        });
         productRepository.deleteById(productId);
     }
 
     public void deleteAll(){
+        orderService.findAll().forEach(order -> {
+            order.getOrderProductsIds().clear();
+            orderService.update(order,order.getOrderId());
+        });
         productRepository.deleteAll();
     }
 }

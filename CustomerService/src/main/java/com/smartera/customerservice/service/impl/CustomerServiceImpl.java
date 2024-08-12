@@ -1,5 +1,6 @@
 package com.smartera.customerservice.service.impl;
 
+import com.smartera.customerservice.client.OrderControllerClient;
 import com.smartera.customerservice.entity.Customer;
 import com.smartera.customerservice.exception.CustomerNotFoundException;
 import com.smartera.customerservice.repository.CustomerRepository;
@@ -16,6 +17,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     CustomerRepository customerRepository;
+
+
+    @Autowired
+    OrderControllerClient orderControllerClient;
 
     public void save(Customer customer) {
         customerRepository.save(customer);
@@ -56,10 +61,13 @@ public class CustomerServiceImpl implements CustomerService {
         if (o.isEmpty()) {
             throw new CustomerNotFoundException(customerId);
         }
+        orderControllerClient.deleteByCustomerId(customerId);
         customerRepository.deleteById(customerId);
     }
 
     public void deleteAll() {
+        customerRepository.findAll()
+                .forEach(customer -> orderControllerClient.deleteByCustomerId(customer.getCustomerId()));
         customerRepository.deleteAll();
     }
 
