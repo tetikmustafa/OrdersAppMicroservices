@@ -24,11 +24,10 @@ services:
         condition: service_started
     environment:
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://serviceregistry:8761/eureka
-      - SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS-CONFIGURATIONS_0_ALLOWEDORIGINS=*
     networks:
       - springboot-mysql-network
   customerservice:
-    image: tet1k/ordersapp_customerservice:v3
+    image: tet1k/ordersapp_customerservice:v4
     ports:
       - 8082:8082
     depends_on:
@@ -46,7 +45,7 @@ services:
     networks:
       - springboot-mysql-network
   orderservice:
-    image: tet1k/ordersapp_orderservice:v3
+    image: tet1k/ordersapp_orderservice:v4
     ports:
       - 8083:8083
     depends_on:
