@@ -7,6 +7,8 @@ import com.smartera.customerservice.dto.CustomerWriteDto;
 import com.smartera.customerservice.serviceview.CustomerServiceView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,6 +36,12 @@ public class CustomerControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Captor
+    private ArgumentCaptor<CustomerWriteDto> customerWriteDtoArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<CustomerUpdateDto> customerUpdateDtoArgumentCaptor;
 
     private CustomerReadDto customerReadDto;
     private CustomerWriteDto customerWriteDto;
@@ -70,6 +77,15 @@ public class CustomerControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.customerId").value("1"))
                 .andExpect(jsonPath("$.customerName").value("Test Customer"));
+
+        verify(customerServiceView).save(customerWriteDtoArgumentCaptor.capture());
+        CustomerWriteDto capturedCustomer = customerWriteDtoArgumentCaptor.getValue();
+        assert(capturedCustomer.getCustomerName().equals("Test Customer"));
+        assert(capturedCustomer.getCustomerDescription().equals("Test Description"));
+
+        verify(customerServiceView).findById("1");
+
+
     }
 
     @Test
@@ -80,6 +96,8 @@ public class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerId").value("1"))
                 .andExpect(jsonPath("$.customerName").value("Test Customer"));
+
+        verify(customerServiceView).findById("1");
     }
 
     @Test
@@ -93,6 +111,8 @@ public class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].customerId").value("1"));
+
+        verify(customerServiceView).findAll();
     }
 
     @Test
@@ -106,6 +126,8 @@ public class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].customerId").value("1"));
+
+        verify(customerServiceView).findByKeyword("Test");
     }
 
     @Test
@@ -119,6 +141,12 @@ public class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerId").value("1"))
                 .andExpect(jsonPath("$.customerName").value("Test Customer"));
+
+        verify(customerServiceView).update(customerUpdateDtoArgumentCaptor.capture(), eq("1"));
+        CustomerUpdateDto capturedCustomer = customerUpdateDtoArgumentCaptor.getValue();
+        assert(capturedCustomer.getCustomerName().equals("Updated Customer"));
+        assert(capturedCustomer.getCustomerDescription().equals("Updated Description"));
+        assert(capturedCustomer.getCustomerOrdersIds().isEmpty());
     }
 
     @Test
@@ -128,6 +156,8 @@ public class CustomerControllerTest {
         mockMvc.perform(put("/customers/1/authorize"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Customer with id 1 authorization has been changed."));
+
+        verify(customerServiceView).authorize("1");
     }
 
     @Test
@@ -137,6 +167,8 @@ public class CustomerControllerTest {
         mockMvc.perform(delete("/customers/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Customer with id 1 has been deleted"));
+
+        verify(customerServiceView).deleteById("1");
     }
 
     @Test
@@ -146,6 +178,8 @@ public class CustomerControllerTest {
         mockMvc.perform(delete("/customers"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("All customers have been deleted"));
+
+        verify(customerServiceView).deleteAll();
     }
 }
 

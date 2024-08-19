@@ -1,14 +1,14 @@
 package com.smartera.customerservice.servicetest;
 
+import com.smartera.customerservice.client.OrderControllerClient;
 import com.smartera.customerservice.service.impl.CustomerServiceImpl;
 import com.smartera.customerservice.entity.Customer;
 import com.smartera.customerservice.exception.CustomerNotFoundException;
 import com.smartera.customerservice.repository.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,12 @@ public class CustomerServiceImplTest {
 
     @Mock
     private CustomerRepository customerRepository;
+
+    @Mock
+    private OrderControllerClient orderControllerClient;
+
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
 
     private Customer customer;
 
@@ -43,7 +49,11 @@ public class CustomerServiceImplTest {
     @Test
     public void testSaveCustomer() {
         customerService.save(customer);
-        verify(customerRepository, times(1)).save(any(Customer.class));
+        verify(customerRepository, times(1)).save(customerArgumentCaptor.capture());
+        assertEquals("Test Customer", customerArgumentCaptor.getValue().getCustomerName());
+        assertEquals("Test Description", customerArgumentCaptor.getValue().getCustomerDescription());
+        assertFalse(customerArgumentCaptor.getValue().isCustomerAuthorization());
+        assertEquals(0, customerArgumentCaptor.getValue().getCustomerOrdersIds().size());
     }
 
     @Test
@@ -52,12 +62,17 @@ public class CustomerServiceImplTest {
         Customer foundCustomer = customerService.findById("1");
         assertNotNull(foundCustomer);
         assertEquals("Test Customer", foundCustomer.getCustomerName());
+        assertEquals("Test Description", foundCustomer.getCustomerDescription());
+        assertFalse(foundCustomer.isCustomerAuthorization());
+        assertEquals(0, foundCustomer.getCustomerOrdersIds().size());
+        verify(customerRepository, times(1)).findById("1");
     }
 
     @Test
     public void testFindById_NotFound() {
         when(customerRepository.findById("1")).thenReturn(Optional.empty());
         assertThrows(CustomerNotFoundException.class, () -> customerService.findById("1"));
+        verify(customerRepository, times(1)).findById("1");
     }
 
     @Test
@@ -69,6 +84,9 @@ public class CustomerServiceImplTest {
         List<Customer> foundCustomers = customerService.findAll();
         assertEquals(1, foundCustomers.size());
         assertEquals("Test Customer", foundCustomers.get(0).getCustomerName());
+        assertEquals("Test Description", foundCustomers.get(0).getCustomerDescription());
+        assertFalse(foundCustomers.get(0).isCustomerAuthorization());
+        assertEquals(0, foundCustomers.get(0).getCustomerOrdersIds().size());
     }
 
     @Test
@@ -81,6 +99,9 @@ public class CustomerServiceImplTest {
         List<Customer> foundCustomers = customerService.findByKeyword("Test");
         assertEquals(1, foundCustomers.size());
         assertEquals("Test Customer", foundCustomers.get(0).getCustomerName());
+        assertEquals("Test Description", foundCustomers.get(0).getCustomerDescription());
+        assertFalse(foundCustomers.get(0).isCustomerAuthorization());
+        assertEquals(0, foundCustomers.get(0).getCustomerOrdersIds().size());
     }
 
     @Test
@@ -88,31 +109,48 @@ public class CustomerServiceImplTest {
         when(customerRepository.findById("1")).thenReturn(Optional.of(customer));
         customer.setCustomerName("Updated Customer");
         customerService.update(customer);
-        verify(customerRepository, times(1)).save(any(Customer.class));
+        verify(customerRepository, times(1)).save(customerArgumentCaptor.capture());
+        assertEquals("Updated Customer", customerArgumentCaptor.getValue().getCustomerName());
+        assertEquals("Test Description", customerArgumentCaptor.getValue().getCustomerDescription());
+        assertFalse(customerArgumentCaptor.getValue().isCustomerAuthorization());
+        assertEquals(0, customerArgumentCaptor.getValue().getCustomerOrdersIds().size());
     }
 
     @Test
     public void testUpdateCustomer_NotFound() {
         when(customerRepository.findById("1")).thenReturn(Optional.empty());
         assertThrows(CustomerNotFoundException.class, () -> customerService.update(customer));
+        verify(customerRepository, times(1)).findById("1");
+        verify(customerRepository, times(0)).save(any());
     }
 
     @Test
     public void testDeleteById() {
         when(customerRepository.findById("1")).thenReturn(Optional.of(customer));
+        when(orderControllerClient.deleteByCustomerId("1")).thenReturn(ResponseEntity.ok().build());
         customerService.deleteById("1");
         verify(customerRepository, times(1)).deleteById("1");
+        verify(orderControllerClient, times(1)).deleteByCustomerId("1");
     }
 
     @Test
     public void testDeleteById_NotFound() {
         when(customerRepository.findById("1")).thenReturn(Optional.empty());
         assertThrows(CustomerNotFoundException.class, () -> customerService.deleteById("1"));
+        verify(customerRepository, times(1)).findById("1");
+        verify(customerRepository, times(0)).deleteById("1");
+        verify(orderControllerClient, times(0)).deleteByCustomerId("1");
     }
 
     @Test
     public void testDeleteAll() {
+        List<Customer> customers = new ArrayList<>();
+        customers.add(customer);
+        when(customerRepository.findAll()).thenReturn(customers);
+        when(orderControllerClient.deleteByCustomerId("1")).thenReturn(ResponseEntity.ok().build());
         customerService.deleteAll();
+        verify(customerRepository, times(1)).findAll();
+        verify(orderControllerClient, times(1)).deleteByCustomerId("1");
         verify(customerRepository, times(1)).deleteAll();
     }
 
@@ -120,13 +158,21 @@ public class CustomerServiceImplTest {
     public void testAuthorizeCustomer() {
         when(customerRepository.findById("1")).thenReturn(Optional.of(customer));
         customerService.authorize("1");
-        verify(customerRepository, times(1)).save(any(Customer.class));
+        verify(customerRepository, times(1)).save(customerArgumentCaptor.capture());
+        assertEquals("Test Customer", customerArgumentCaptor.getValue().getCustomerName());
+        assertEquals("Test Description", customerArgumentCaptor.getValue().getCustomerDescription());
+        assertTrue(customerArgumentCaptor.getValue().isCustomerAuthorization());
+        assertEquals(0, customerArgumentCaptor.getValue().getCustomerOrdersIds().size());
         assertTrue(customer.isCustomerAuthorization());
+        verify(customerRepository, times(1)).findById("1");
+        verify(customerRepository, times(1)).save(customer);
     }
 
     @Test
     public void testAuthorizeCustomer_NotFound() {
         when(customerRepository.findById("1")).thenReturn(Optional.empty());
         assertThrows(CustomerNotFoundException.class, () -> customerService.authorize("1"));
+        verify(customerRepository, times(1)).findById("1");
+        verify(customerRepository, times(0)).save(any());
     }
 }
