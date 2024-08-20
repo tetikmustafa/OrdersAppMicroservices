@@ -7,6 +7,8 @@ import com.smartera.orderservice.serviceview.OrderServiceView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -33,6 +34,9 @@ public class OrderControllerTest {
 
     @MockBean
     private OrderServiceView orderServiceView;
+
+    @Captor
+    private ArgumentCaptor<OrderWriteDto> orderWriteDtoArgumentCaptor;
 
     private OrderWriteDto orderWriteDto;
     private OrderReadDto orderReadDto;
@@ -77,6 +81,14 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.orderDescription").value("Order Description"))
                 .andExpect(jsonPath("$.orderProductsIds[0]").value("prod1"))
                 .andExpect(jsonPath("$.orderProductsIds[1]").value("prod2"));
+
+        verify(orderServiceView).save(orderWriteDtoArgumentCaptor.capture(), any(String.class));
+        OrderWriteDto capturedOrder = orderWriteDtoArgumentCaptor.getValue();
+        assert(capturedOrder.getOrderName().equals("Order Name"));
+        assert(capturedOrder.getOrderDescription().equals("Order Description"));
+        assert (capturedOrder.getOrderProductsIds().get(0).equals("prod1"));
+        assert (capturedOrder.getOrderProductsIds().get(1).equals("prod2"));
+        verify(orderServiceView).findById("1");
     }
 
     @Test
@@ -91,6 +103,8 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.orderDescription").value("Order Description"))
                 .andExpect(jsonPath("$.orderProductsIds[0]").value("prod1"))
                 .andExpect(jsonPath("$.orderProductsIds[1]").value("prod2"));
+
+        verify(orderServiceView).findById("1");
     }
 
     @Test
@@ -108,6 +122,7 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$[0].orderDescription").value("Order Description"))
                 .andExpect(jsonPath("$[0].orderProductsIds[0]").value("prod1"))
                 .andExpect(jsonPath("$[0].orderProductsIds[1]").value("prod2"));
+        verify(orderServiceView).findAll();
     }
 
     @Test
@@ -125,6 +140,7 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$[0].orderDescription").value("Order Description"))
                 .andExpect(jsonPath("$[0].orderProductsIds[0]").value("prod1"))
                 .andExpect(jsonPath("$[0].orderProductsIds[1]").value("prod2"));
+        verify(orderServiceView).findByKeyword("Order");
     }
 
     @Test
@@ -142,6 +158,25 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$[0].orderDescription").value("Order Description"))
                 .andExpect(jsonPath("$[0].orderProductsIds[0]").value("prod1"))
                 .andExpect(jsonPath("$[0].orderProductsIds[1]").value("prod2"));
+        verify(orderServiceView).findByCustomerId("customer1");
+    }
+
+    @Test
+    public void testFindByCustomerIdKeyword() throws Exception {
+        List<OrderReadDto> orders = new ArrayList<>();
+        orders.add(orderReadDto);
+
+        when(orderServiceView.findByCustomerIdKeyword("customer1", "Order")).thenReturn(orders);
+
+        mockMvc.perform(get("/orders/byCustomerId/customer1/Order"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].orderId").value("1"))
+                .andExpect(jsonPath("$[0].orderCustomerId").value("customer1"))
+                .andExpect(jsonPath("$[0].orderName").value("Order Name"))
+                .andExpect(jsonPath("$[0].orderDescription").value("Order Description"))
+                .andExpect(jsonPath("$[0].orderProductsIds[0]").value("prod1"))
+                .andExpect(jsonPath("$[0].orderProductsIds[1]").value("prod2"));
+        verify(orderServiceView).findByCustomerIdKeyword("customer1", "Order");
     }
 
     @Test
@@ -159,6 +194,14 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.orderDescription").value("Updated Order Description"))
                 .andExpect(jsonPath("$.orderProductsIds[0]").value("prod1"))
                 .andExpect(jsonPath("$.orderProductsIds[1]").value("prod2"));
+
+        verify(orderServiceView).update(orderWriteDtoArgumentCaptor.capture(), any(String.class));
+        OrderWriteDto capturedOrder = orderWriteDtoArgumentCaptor.getValue();
+        assert(capturedOrder.getOrderName().equals("Updated Order Name"));
+        assert(capturedOrder.getOrderDescription().equals("Updated Order Description"));
+        assert (capturedOrder.getOrderProductsIds().get(0).equals("prod1"));
+        assert (capturedOrder.getOrderProductsIds().get(1).equals("prod2"));
+        verify(orderServiceView).findById("1");
     }
 
     @Test
@@ -168,6 +211,8 @@ public class OrderControllerTest {
         mockMvc.perform(delete("/orders/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Order with id 1 has been deleted"));
+
+        verify(orderServiceView).deleteById("1");
     }
 
     @Test
@@ -177,6 +222,8 @@ public class OrderControllerTest {
         mockMvc.perform(delete("/orders/byCustomerId/customer1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Orders of customer with id customer1 have been deleted"));
+
+        verify(orderServiceView).deleteByCustomerId("customer1");
     }
 
     @Test
@@ -186,6 +233,8 @@ public class OrderControllerTest {
         mockMvc.perform(delete("/orders"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("All orders have been deleted"));
+
+        verify(orderServiceView).deleteAll();
     }
 }
 

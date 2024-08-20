@@ -1,5 +1,6 @@
 package com.smartera.orderservice.servicetest;
 
+import com.smartera.orderservice.dto.CustomerUpdateDto;
 import com.smartera.orderservice.service.impl.OrderServiceImpl;
 import com.smartera.orderservice.client.CustomerControllerClient;
 import com.smartera.orderservice.dto.CustomerReadDto;
@@ -9,9 +10,7 @@ import com.smartera.orderservice.exception.OrderNotFoundException;
 import com.smartera.orderservice.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,12 @@ public class OrderServiceImplTest {
     @InjectMocks
     private OrderServiceImpl orderService;
 
+    @Captor
+    private ArgumentCaptor<Order> orderArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<CustomerUpdateDto> customerUpdateDtoArgumentCaptor;
+
     private Order order;
     private CustomerReadDto customerReadDto;
 
@@ -49,6 +54,7 @@ public class OrderServiceImplTest {
         customerReadDto = new CustomerReadDto();
         customerReadDto.setCustomerId("customer1");
         customerReadDto.setCustomerName("Test Customer");
+        customerReadDto.setCustomerDescription("Test Description");
         customerReadDto.setCustomerAuthorization(true);
         customerReadDto.setCustomerOrdersIds(new ArrayList<>());
     }
@@ -60,9 +66,18 @@ public class OrderServiceImplTest {
 
         orderService.save(order, "customer1");
 
-        verify(orderRepository, times(1)).save(order);
-        verify(customerControllerClient, times(1)).update(any(), eq("customer1"));
-        assertTrue(customerReadDto.getCustomerOrdersIds().contains(order.getOrderId()));
+        verify(orderRepository, times(1)).save(orderArgumentCaptor.capture());
+        assertEquals("Test Order", orderArgumentCaptor.getValue().getOrderName());
+        assertEquals("Test Order Description", orderArgumentCaptor.getValue().getOrderDescription());
+        assertEquals("customer1", orderArgumentCaptor.getValue().getOrderCustomerId());
+        assertEquals(List.of("prod1", "prod2"), orderArgumentCaptor.getValue().getOrderProductsIds());
+
+        verify(customerControllerClient, times(1)).update(customerUpdateDtoArgumentCaptor.capture(), eq("customer1"));
+        assertEquals("Test Customer", customerUpdateDtoArgumentCaptor.getValue().getCustomerName());
+        assertEquals("Test Description", customerUpdateDtoArgumentCaptor.getValue().getCustomerDescription());
+        assertTrue(customerUpdateDtoArgumentCaptor.getValue().isCustomerAuthorization());
+        assertTrue(customerUpdateDtoArgumentCaptor.getValue().getCustomerOrdersIds().contains("1"));
+
     }
 
     @Test
@@ -76,6 +91,7 @@ public class OrderServiceImplTest {
 
         verify(orderRepository, never()).save(any(Order.class));
         verify(customerControllerClient, never()).update(any(), any());
+        verify(customerControllerClient, times(1)).findById("customer1");
     }
 
     @Test
@@ -135,7 +151,15 @@ public class OrderServiceImplTest {
 
         orderService.update(order, "1");
 
-        verify(orderRepository, times(1)).save(order);
+        verify(orderRepository, times(1)).findById("1");
+
+        verify(orderRepository, times(1)).save(orderArgumentCaptor.capture());
+        assertEquals("1", orderArgumentCaptor.getValue().getOrderId());
+        assertEquals("Test Order", orderArgumentCaptor.getValue().getOrderName());
+        assertEquals("Test Order Description", orderArgumentCaptor.getValue().getOrderDescription());
+        assertEquals("customer1", orderArgumentCaptor.getValue().getOrderCustomerId());
+        assertEquals(List.of("prod1", "prod2"), orderArgumentCaptor.getValue().getOrderProductsIds());
+
     }
 
     @Test
@@ -145,6 +169,8 @@ public class OrderServiceImplTest {
         assertThrows(OrderNotFoundException.class, () -> {
             orderService.update(order, "1");
         });
+
+        verify(orderRepository, times(1)).findById("1");
 
         verify(orderRepository, never()).save(any(Order.class));
     }
@@ -156,8 +182,17 @@ public class OrderServiceImplTest {
 
         orderService.deleteById("1");
 
+        verify(orderRepository, times(1)).findById("1");
+
+        verify(customerControllerClient, times(1)).findById("customer1");
+
         verify(orderRepository, times(1)).deleteById("1");
-        verify(customerControllerClient, times(1)).update(any(), eq("customer1"));
+
+        verify(customerControllerClient, times(1)).update(customerUpdateDtoArgumentCaptor.capture(), eq("customer1"));
+        assertEquals("Test Customer", customerUpdateDtoArgumentCaptor.getValue().getCustomerName());
+        assertEquals("Test Description", customerUpdateDtoArgumentCaptor.getValue().getCustomerDescription());
+        assertTrue(customerUpdateDtoArgumentCaptor.getValue().isCustomerAuthorization());
+        assertFalse(customerUpdateDtoArgumentCaptor.getValue().getCustomerOrdersIds().contains("1"));
     }
 
     @Test
@@ -168,6 +203,9 @@ public class OrderServiceImplTest {
             orderService.deleteById("1");
         });
 
+        verify(orderRepository, times(1)).findById("1");
+
+        verify(customerControllerClient, never()).findById("customer1");
         verify(orderRepository, never()).deleteById(anyString());
         verify(customerControllerClient, never()).update(any(), any());
     }
@@ -182,8 +220,16 @@ public class OrderServiceImplTest {
 
         orderService.deleteByCustomerId("customer1");
 
+        verify(orderRepository, times(1)).findByOrderCustomerId("customer1");
+        verify(customerControllerClient, times(1)).findById("customer1");
+
         verify(orderRepository, times(1)).deleteById("1");
-        verify(customerControllerClient, times(1)).update(any(), eq("customer1"));
+
+        verify(customerControllerClient, times(1)).update(customerUpdateDtoArgumentCaptor.capture(), eq("customer1"));
+        assertEquals("Test Customer", customerUpdateDtoArgumentCaptor.getValue().getCustomerName());
+        assertEquals("Test Description", customerUpdateDtoArgumentCaptor.getValue().getCustomerDescription());
+        assertTrue(customerUpdateDtoArgumentCaptor.getValue().isCustomerAuthorization());
+        assertFalse(customerUpdateDtoArgumentCaptor.getValue().getCustomerOrdersIds().contains("1"));
     }
 
     @Test
@@ -195,8 +241,14 @@ public class OrderServiceImplTest {
 
         orderService.deleteAll();
 
+        verify(customerControllerClient, times(1)).findAll();
+
         verify(orderRepository, times(1)).deleteAll();
-        verify(customerControllerClient, times(1)).update(any(), eq("customer1"));
+        verify(customerControllerClient, times(1)).update(customerUpdateDtoArgumentCaptor.capture(), eq("customer1"));
+        assertEquals("Test Customer", customerUpdateDtoArgumentCaptor.getValue().getCustomerName());
+        assertEquals("Test Description", customerUpdateDtoArgumentCaptor.getValue().getCustomerDescription());
+        assertTrue(customerUpdateDtoArgumentCaptor.getValue().isCustomerAuthorization());
+        assertNull(customerUpdateDtoArgumentCaptor.getValue().getCustomerOrdersIds());
     }
 }
 

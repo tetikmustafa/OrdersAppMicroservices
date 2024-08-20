@@ -7,6 +7,8 @@ import com.smartera.orderservice.serviceview.ProductServiceView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,6 +33,9 @@ public class ProductControllerTest {
 
     @MockBean
     private ProductServiceView productServiceView;
+
+    @Captor
+    private ArgumentCaptor<ProductWriteDto> productWriteDtoArgumentCaptor;
 
     private ProductWriteDto productWriteDto;
     private ProductReadDto productReadDto;
@@ -75,6 +79,14 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.productDescription").value("Product Description"))
                 .andExpect(jsonPath("$.productPrice").value(100.0))
                 .andExpect(jsonPath("$.productStock").value(50));
+
+        verify(productServiceView).save(productWriteDtoArgumentCaptor.capture());
+        ProductWriteDto capturedProductWriteDto = productWriteDtoArgumentCaptor.getValue();
+        assert(capturedProductWriteDto.getProductName().equals("Product Name"));
+        assert(capturedProductWriteDto.getProductDescription().equals("Product Description"));
+        assert(capturedProductWriteDto.getProductPrice() == 100.0);
+        assert(capturedProductWriteDto.getProductStock() == 50);
+        verify(productServiceView).findById("1");
     }
 
     @Test
@@ -88,6 +100,8 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.productDescription").value("Product Description"))
                 .andExpect(jsonPath("$.productPrice").value(100.0))
                 .andExpect(jsonPath("$.productStock").value(50));
+
+        verify(productServiceView).findById("1");
     }
 
     @Test
@@ -104,6 +118,8 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$[0].productDescription").value("Product Description"))
                 .andExpect(jsonPath("$[0].productPrice").value(100.0))
                 .andExpect(jsonPath("$[0].productStock").value(50));
+
+        verify(productServiceView).findAll();
     }
 
     @Test
@@ -120,6 +136,8 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$[0].productDescription").value("Product Description"))
                 .andExpect(jsonPath("$[0].productPrice").value(100.0))
                 .andExpect(jsonPath("$[0].productStock").value(50));
+
+        verify(productServiceView).findByKeyword("Product");
     }
 
     @Test
@@ -136,6 +154,14 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.productDescription").value("Updated Product Description"))
                 .andExpect(jsonPath("$.productPrice").value(150.0))
                 .andExpect(jsonPath("$.productStock").value(30));
+
+        verify(productServiceView).update(productWriteDtoArgumentCaptor.capture(), eq("1"));
+        ProductWriteDto capturedProductWriteDto = productWriteDtoArgumentCaptor.getValue();
+        assert(capturedProductWriteDto.getProductName().equals("Updated Product Name"));
+        assert(capturedProductWriteDto.getProductDescription().equals("Updated Product Description"));
+        assert(capturedProductWriteDto.getProductPrice() == 150.0);
+        assert(capturedProductWriteDto.getProductStock() == 30);
+        verify(productServiceView).findById("1");
     }
 
     @Test
@@ -145,6 +171,8 @@ public class ProductControllerTest {
         mockMvc.perform(delete("/products/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Product with id 1 has been deleted"));
+
+        verify(productServiceView).deleteById("1");
     }
 
     @Test
@@ -154,5 +182,7 @@ public class ProductControllerTest {
         mockMvc.perform(delete("/products"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("All products have been deleted"));
+
+        verify(productServiceView).deleteAll();
     }
 }
